@@ -217,3 +217,89 @@ public int uniquePathsIII(int[][] grid) {
         grid[sr][sc] = temp;
         return count;
     }
+
+
+    //Keypad Combination
+
+ public List<String> letterCombinations(String digits) {
+        String[] codeArr= { "" , "-" , "abc" , "def" , "ghi" , "jkl" , "mno" , "pqrs" , "tuv" , "wxyz" };
+        List<String> ans = new ArrayList<>();
+        
+        letterCombination( digits , 0 , codeArr , "" , ans );
+        return digits.length() == 0 ? new ArrayList<>() : ans;
+    }
+    
+    public void letterCombination( String str , int idx , String[] codeArr ,String sans,  List<String> ans ){
+        if( idx == str.length() ){
+            ans.add(sans);
+            return;
+        }
+        
+        int digit = str.charAt(idx) - '0';
+        
+        String code = codeArr[digit];
+        
+        for( int i = 0 ;  i < code.length() ; i++ ){
+           
+            letterCombination( str , idx +1 ,  codeArr ,sans + code.charAt(i) , ans );
+            
+        }
+    }
+
+    // permutations
+
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> sans = new ArrayList<>();
+        perm( nums , 0 , new boolean[nums.length] , sans , ans );
+        return ans;
+    }
+    public void perm( int[] nums , int count , boolean[] vis , List<Integer> sans , List<List<Integer>> ans ){
+        
+        if( count == nums.length ){
+            List<Integer> bans = new ArrayList<>(sans);
+            ans.add(bans);
+            return;
+        }
+        
+        for( int i = 0 ; i < nums.length ; i++  ){
+            if( !vis[i] ){
+                vis[i] = true;
+                sans.add( nums[i] );
+                perm( nums , count + 1 , vis ,sans , ans );
+                sans.remove( sans.size() - 1 );
+                vis[i] = false;
+            }
+        }
+    }
+
+    //unique permutation
+
+     public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> sans = new ArrayList<>();
+        uniquePermutations( nums , new boolean[nums.length] , 0 , ans , sans );
+        return ans;
+    }
+    
+    public void uniquePermutations( int[] nums , boolean[] blockedCells , int count , List<List<Integer>> ans , List<Integer> sans  ){
+        if( count == nums.length ){
+            List<Integer> bans = new ArrayList<>(sans);
+            ans.add( bans );
+            return;
+        }
+        
+        boolean[] alreadyCalled = new boolean[20];
+        
+        for( int i = 0 ; i < nums.length ; i++ ){
+            if( !blockedCells[i] && !alreadyCalled[nums[i]+10] ){
+                sans.add( nums[i] );
+                blockedCells[i] = true;
+                alreadyCalled[nums[i]+10] = true;
+                uniquePermutations( nums , blockedCells , count+1 , ans , sans );
+                sans.remove( sans.size()-1 );
+                blockedCells[i] = false;
+            }
+        }
+       
+    }
