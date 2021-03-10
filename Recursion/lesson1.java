@@ -421,4 +421,214 @@ public class lesson1 {
         }
          return count;
     }
+
+    // dp
+    //leetcode 70
+
+    public int climbStairs(int n) {
+        int[] dp = new int[n+1];
+        return csTab( n , dp );
+    }
+    
+    public int csRec( int n , int idx ){
+        if( idx == n ){
+            return 1;
+        }
+        
+        int count = 0;
+        
+        if( idx + 1 <= n ) count += csRec( n , idx  +1 );
+        if( idx + 2 <= n ) count += csRec( n , idx + 2 );
+        return count;
+    } 
+    
+    public int csMem( int n , int idx , int[] dp){
+        if( idx == n ){
+            return dp[idx] = 1;
+        }
+        if( dp[idx] != 0 ){
+            return dp[idx];
+        }
+        int count = 0;
+        
+        if( idx + 1 <= n ) count += csMem( n , idx + 1 , dp );
+        if( idx + 2 <= n ) count += csMem( n , idx + 2 , dp );
+        return dp[idx] = count;
+    } 
+    
+    public int csTab( int n , int[] dp ){
+        for( int idx  = n ; idx >= 0 ; idx-- ){
+            if( idx == n ){
+                 dp[idx] = 1;
+                continue;
+            }
+            
+            int count = 0;
+
+            if( idx + 1 <= n ) count += dp[idx + 1];
+            if( idx + 2 <= n ) count += dp[idx+2];
+             dp[idx] = count;
+        }
+        return dp[0];
+    }
+
+//746. Min Cost Climbing Stairs
+
+public int minCostClimbingStairs(int[] cost) {
+        int[] dp = new int[cost.length];
+        return Math.min( minCostCSMem(cost , 0 , dp) , minCostCSMem(cost , 1 , dp));
+    }
+    
+
+    
+    public int minCostCSMem( int[] arr , int idx, int[] dp ){
+        if( idx == arr.length ){
+            return 0;
+        }
+        if( dp[idx] != 0 ) return dp[idx];
+        
+        int single = 100000;
+        int doubl = 100000;
+
+        if( idx + 1 <= arr.length )  single = minCostCSMem( arr ,idx+1 , dp );
+        if( idx + 2 <= arr.length )  doubl = minCostCSMem( arr ,idx+2 , dp );
+
+        
+        return dp[idx] = arr[idx] + Math.min( single , doubl );
+    }
+
+//64. Minimum Path Sum
+
+    public int minPathSum(int[][] grid) {
+        
+        int[][] dp =new int[grid.length][grid[0].length];
+        return minPathSumMemo( grid , 0 , 0 ,dp );
+        
+    }
+    public int minPathSumRecursive( int[][] arr , int sr , int sc  ){
+        if( sr == arr.length-1 && sc == arr[0].length-1 ){
+            return arr[sr][sc];
+        }
+        
+        int right = (int)1e9;
+        int down = (int)1e9;
+        
+        if( sr + 1 < arr.length ) down = minPathSumRecursive( arr ,sr+1, sc );
+        if( sc + 1 < arr[0].length ) right = minPathSumRecursive( arr ,sr, sc+1 );
+        
+        return arr[sr][sc] + Math.min( right , down );
+
+    }
+    
+    public int minPathSumMemo( int[][] arr , int sr , int sc , int[][] dp ){
+        if( sr == arr.length-1 && sc == arr[0].length-1 ){
+            return dp[sr][sc] = arr[sr][sc];
+        }
+        if( dp[sr][sc] != 0 ) return dp[sr][sc];
+        
+        int right = (int)1e9;
+        int down = (int)1e9;
+        
+        if( sr + 1 < arr.length ) down = minPathSumMemo( arr ,sr+1, sc , dp );
+        if( sc + 1 < arr[0].length ) right = minPathSumMemo( arr ,sr, sc+1 , dp );
+        
+        return dp[sr][sc] = arr[sr][sc] + Math.min( right , down );
+
+    }
+
+
+
+    ///Gold Mine Problem
+
+    static int maxGold(int n, int m, int M[][])
+    {
+        int[][] dp  =new int[n][m];
+        int ans = -(int)1e9;
+        for( int r = 0 ; r < n ; r++ ){
+            ans = Math.max( ans,  maxGoldMemo( M , r, 0 , dp ));
+        }
+        
+        // for( int i  = 0 ; i  < n  ; i++ ){
+        //     for( int  j  = 0 ; j  < m  ; j++ ){
+        //         System.out.print( M[i][j] + " " );
+        //     }
+        //     System.out.println();
+        // }
+        // for( int i  = 0 ; i  < n  ; i++ ){
+        //     for( int  j  = 0 ; j  < m  ; j++ ){
+        //         System.out.print( dp[i][j] + " " );
+        //     }
+        //     System.out.println();
+        // }
+        return ans;
+    }
+    
+    static int maxGold( int[][] arr  , int r , int c ){
+        if( c == arr[0].length-1 ){
+            return arr[r][c];
+        }
+        
+        int dUp = -(int)1e9;
+        int right = -(int)1e9;
+        int dDown = -(int)1e9;
+        
+        if( r - 1 >= 0 && c + 1 < arr[0].length ) dUp = maxGold( arr, r-1 , c+1 );
+        if( c + 1 < arr[0].length ) right = maxGold( arr, r , c+1 );
+        if( r + 1 < arr.length && c + 1 < arr[0].length ) dDown = maxGold( arr, r+1 , c+1 );
+        
+        return arr[r][c] + Math.max( dUp , Math.max( right  , dDown ) );
+    }
+    static int maxGoldMemo( int[][] arr  , int r , int c , int[][] dp ){
+        if( c == arr[0].length-1 ){
+            return dp[r][c] = arr[r][c];
+        }
+        if( dp[r][c] != 0 ) return dp[r][c];
+        
+        int dUp = -(int)1e9;
+        int right = -(int)1e9;
+        int dDown = -(int)1e9;
+        
+        if( r - 1 >= 0 && c + 1 < arr[0].length ) dUp = maxGoldMemo( arr, r-1 , c+1 , dp );
+        if( c + 1 < arr[0].length ) right = maxGoldMemo( arr, r , c+1 ,dp );
+        if( r + 1 < arr.length && c + 1 < arr[0].length ) dDown = maxGoldMemo( arr, r+1 , c+1 ,dp );
+        
+        return dp[r][c] = arr[r][c] + Math.max( dUp , Math.max( right  , dDown ) );
+    }
+
+
+    //Friends Pairing
+
+    static int mod = (int)1e9 + 7;
+    public long countFriendsPairings(int n) 
+    { 
+       long[] dp = new long[n+1];
+       return friendsPairingsDp( n  ,dp ) % mod;
+    }
+    
+    public long friendsPairings( int n , long[] dp ){
+        if( n <= 1 ) return dp[n] = 1;
+        if( dp[n] != 0 ) return dp[n];
+        long single = friendsPairings( n-1  , dp);
+        long makePair  = friendsPairings( n-2 , dp) * (n-1);
+        
+        return dp[n] = single + makePair;
+    }
+    
+    public long friendsPairingsDp( int N , long[] dp ){
+        for( int n = 0 ; n <= N ; n++){
+            if( n <= 1 ){ 
+                dp[n] = 1;
+                continue;
+            }
+            
+            long single = dp[n-1];
+            long makePair  = dp[n-2] * (n-1);
+            dp[n] = ( single + makePair ) % mod;
+        }
+        return dp[N];
+    }
+
+    
+
+    
 }
